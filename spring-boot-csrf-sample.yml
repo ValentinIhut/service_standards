@@ -1,0 +1,82 @@
+server:
+  port: 8082
+
+spring:
+    mvc:
+        view:
+            prefix: /WEB-INF/jsp/
+            suffix: .jsp
+
+security:
+    # disables standard ApplicationWebSecurityConfigurerAdapter
+	# as we need a custom login page and so on.
+    basic:
+        enabled: false
+	# as basic is disabled we will need to handle this flag on our own.
+	# see ApplicationSecurity
+    enable-csrf: true
+	
+  
+eureka:
+  client:
+  	enabled: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+# The OAuth2 server definition that would be used to send the authorization requests to
+#authserver:
+#    hostname: localhost
+#    port: 8899
+#    contextPath: userauth
+
+# Note that the "/user" endpoint needs to provide the principle of the logged in user (/me endpoint)
+#spring:
+#  oauth2:
+#    resource: 
+#      userInfoUri: http://${authserver.hostname}:${authserver.port}/${authserver.contextPath}/me
+#      preferTokenInfo: false 
+#    client:
+#      accessTokenUri: http://${authserver.hostname}:${authserver.port}/${authserver.contextPath}/oauth/token
+#      userAuthorizationUri: http://${authserver.hostname}:${authserver.port}/${authserver.contextPath}/oauth/authorize
+#      clientId: client
+      
+---
+# task-webservice instance when used on Docker
+spring:
+  profiles: docker
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+security:
+	# as basic is disabled we will need to handle this flag on our own.
+	# see ApplicationSecurity
+    enable-csrf: true
+	# disables standard ApplicationWebSecurityConfigurerAdapter
+	# as we need a custom login page and so on.
+    basic:
+        enabled: false
+  
+eureka:
+# Register our microservices to Eureka using hostnames in a Docker environment will not work, they will all get 
+# one and the same hostname. Instead we configure them to use its IP address during registration with Eureka.
+  instance:
+    preferIpAddress: true
+  client:
+    enabled: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://192.168.99.100:8761/eureka/
+      
+# The OAuth2 server definition that would be used to send the authorization requests to
+#authserver:
+#    hostname: 192.168.99.100
+#    port: 8899
+#    contextPath: userauth
+    
+# Define the port where the API gateway server would be running. This could always be port 8080
+# since each docker container has it's own IP
+server:
+  port: 8080
